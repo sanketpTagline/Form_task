@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-class CustomRedioBox extends StatelessWidget {
+class CustomRadioBox extends StatelessWidget {
   String groupValue;
   String radioName;
 
   void Function(String?) onChanged;
 
 
-  CustomRedioBox({super.key, required this.groupValue, required this.radioName,
+  CustomRadioBox({super.key, required this.groupValue, required this.radioName,
       required this.onChanged,});
 
   @override

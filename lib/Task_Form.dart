@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:untitled/Task_from_result.dart';
-import 'package:untitled/customWidget/customRedioButton.dart';
+import 'package:untitled/customWidget/customRadioButton.dart';
 
 import 'package:untitled/formModel.dart';
 
@@ -41,18 +41,16 @@ class _FormTaskState extends State<FormTask> {
   DateTime? _dateTime;
   FormData? formData;
 
-  String? dropdownValue;
-  String dropdownValue1 = "Ahmadabad";
+  String dropdownValue = "Ahmadabad";
   String groupValue = "";
 
-  RegExp nameRex = RegExp('[a-zA-Z]');
   // RegExp nameRex = RegExp('^[a-zA-Z][a-zA-Z ]*\$');
   // RegExp nameRex = RegExp("^[a-zA-Zs]*\$");
   // RegExp nameRex = RegExp("^[a-z]+(?:[a-z\s]*[a-z])?\$");
   // RegExp nameRex = RegExp("^[a-zA-Z]+\$"); // only allow char and space not allow multiple word
   // RegExp nameRex = RegExp("^[a-zA-Z]+[a-zA-Z\\s]*?\$");
+  RegExp nameRex = RegExp('[a-zA-Z]');
   RegExp numberRex = RegExp("^(?:[+0]9)?[0-9]{10}\$");
-  // RegExp passwordRex = RegExp("r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}\$");
   String hobbiesConcatetaion = "";
 
   final List<String> cityName = [
@@ -86,6 +84,7 @@ class _FormTaskState extends State<FormTask> {
   List<bool> isSelect = [true, false];
   List checkBoxValue = [];
   String? labelText;
+  bool isSnackBarVisible = false;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   GlobalKey<FormFieldState> productListDdlKey = GlobalKey<FormFieldState>();
@@ -100,6 +99,7 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
         child: Scaffold(
       key: scaffoldKey,
@@ -127,6 +127,7 @@ class _FormTaskState extends State<FormTask> {
                     isSelect = [true, false];
                     productListDdlKey.currentState!.reset();
                     FormTask.prefs!.clear();
+                    dropdownValue = "Ahmadabad";
                   });
                 },
                 child:
@@ -330,7 +331,9 @@ class _FormTaskState extends State<FormTask> {
                 ),
                 h15(),
                 DropdownButtonFormField(
-                  // value: dropdownValue1,
+
+
+                  value: dropdownValue,
                   key: productListDdlKey,
                   menuMaxHeight: 300,
                   items: cityName
@@ -339,7 +342,7 @@ class _FormTaskState extends State<FormTask> {
                       .toList(),
                   onChanged: (value) {
                     setState(() {
-                      dropdownValue = value;
+                      dropdownValue = value!;
                     });
                   },
                   decoration: const InputDecoration(
@@ -440,7 +443,7 @@ class _FormTaskState extends State<FormTask> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text("Select Gender:"),
-                    CustomRedioBox(
+                    CustomRadioBox(
                       groupValue: groupValue,
                       radioName: "Male",
                       onChanged: (value) {
@@ -449,7 +452,7 @@ class _FormTaskState extends State<FormTask> {
                         });
                       },
                     ),
-                    CustomRedioBox(
+                    CustomRadioBox(
                       groupValue: groupValue,
                       radioName: "Female",
                       onChanged: (value) {
@@ -497,12 +500,10 @@ class _FormTaskState extends State<FormTask> {
                       backgroundColor: Colors.deepPurple,
                     ),
                     onPressed: () {
-                      // print("Name Validation ==> ${nameValidation}  Name ==> ${nameController.text}");
-                      // print("${formKey.currentState!.validate()}");
                       if (formKey.currentState!.validate() &&
                           groupValue.isNotEmpty &&
                           groupValue != "" &&
-                          dropdownValue!.isNotEmpty &&
+                          dropdownValue.isNotEmpty &&
                           (isOther
                               ? (otherController.text.isNotEmpty &&
                                   otherValidation)
@@ -619,10 +620,7 @@ class _FormTaskState extends State<FormTask> {
             helpText: "Enter your Birthdate",
             currentDate: DateTime.now())
         .then((value) {
-      if (value == null) {
-        // ScaffoldMessenger.of(context)
-        //     .showSnackBar(const SnackBar(content: Text("Enter the date")));
-      } else {
+      if (value != null)  {
         _dateTime = value;
         var dateFormat =
             "${_dateTime!.day}-${_dateTime!.month}-${_dateTime!.year}";
@@ -634,21 +632,7 @@ class _FormTaskState extends State<FormTask> {
     });
   }
 
-  // openDropDownMenu(context) {
-  //   return DropdownButton(
-  //     value: dropdownValue,
-  //     items: cityName
-  //         .map<DropdownMenuItem<String>>(
-  //             (e) => DropdownMenuItem(value: e, child: Text(e)))
-  //         .toList(),
-  //     onChanged: (value) {
-  //       setState(() {
-  //         dropdownValue = value!;
-  //         cityController.text = dropdownValue.toString();
-  //       });
-  //     },
-  //   );
-  // }
+
 
   _showDialog(context) {
     return showDialog(
@@ -683,16 +667,23 @@ class _FormTaskState extends State<FormTask> {
   }
 
   void scaffoldMessengers(context, message) {
-    ScaffoldMessenger.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          showCloseIcon: true,
-          duration: const Duration(milliseconds: 100),
-          behavior: SnackBarBehavior.floating,
-          content: Text(message.toString()),
-        ),
-      );
+
+    if(!isSnackBarVisible)
+      {
+        isSnackBarVisible =true;
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              showCloseIcon: true,
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+              content: Text(message.toString()),
+            ),
+          ).closed.then((value) {
+            isSnackBarVisible = false;
+          });
+      }
   }
 
   void forGetData() async {
@@ -706,25 +697,24 @@ class _FormTaskState extends State<FormTask> {
     isGaming = FormTask.prefs!.getBool("GamingPref") ?? false;
     isOther = FormTask.prefs!.getBool("OtherPref") ?? false;
 
-    var isselect1 =
+    var isSelect1 =
         FormTask.prefs!.getStringList("WorkPref") ?? ["true", "false"];
-    bool home = bool.parse(isselect1[0]);
-    bool office = bool.parse(isselect1[1]);
-
+    bool home = bool.parse(isSelect1[0]);
+    bool office = bool.parse(isSelect1[1]);
     isSelect = [home, office];
-
-    List<String> allValues = FormTask.prefs!.getStringList(
-          "AllPref",
-        ) ??
-        [];
+    List<String> allValues = FormTask.prefs!.getStringList("AllPref",) ?? ["","","","","","Ahmadabad","",""];
     nameController.text = allValues[0];
     numberController.text = allValues[1];
     passwordController.text = allValues[2];
     addressController.text = allValues[3];
     dateController.text = allValues[4];
+
     dropdownValue = allValues[5];
+
     otherController.text = allValues[6];
     groupValue = allValues[7];
+    setState(() {
+    });
   }
 }
 
