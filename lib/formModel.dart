@@ -11,6 +11,8 @@ String formDataToJson(FormData data) => json.encode(data.toJson());
 class FormData {
   String name;
   String phoneNumber;
+  String password;
+  String address;
   String birthDate;
   String city;
   String hobbies;
@@ -20,6 +22,8 @@ class FormData {
   FormData({
     required this.name,
     required this.phoneNumber,
+    required this.password,
+    required this.address,
     required this.birthDate,
     required this.city,
     required this.hobbies,
@@ -30,6 +34,8 @@ class FormData {
   factory FormData.fromJson(Map<String, dynamic> json) => FormData(
     name: json["Name"],
     phoneNumber: json["PhoneNumber"],
+    password: json["Password"],
+    address: json["Address"],
     birthDate: json["BirthDate"],
     city: json["City"],
     hobbies: json["hobbies"],
@@ -40,6 +46,8 @@ class FormData {
   Map<String, dynamic> toJson() => {
     "Name": name,
     "PhoneNumber": phoneNumber,
+    "Password": password,
+    "Address": address,
     "BirthDate": birthDate,
     "City": city,
     "hobbies": hobbies,

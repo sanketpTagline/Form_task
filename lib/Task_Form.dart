@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:untitled/Task_from_result.dart';
 import 'package:untitled/customWidget/customRedioButton.dart';
@@ -9,6 +10,7 @@ import 'package:untitled/formModel.dart';
 import 'customWidget/customCheckBox.dart';
 
 class FormTask extends StatefulWidget {
+  static SharedPreferences? prefs;
   const FormTask({super.key});
 
   @override
@@ -18,6 +20,8 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
   TextEditingController nameController = TextEditingController();
   TextEditingController numberController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController cityController = TextEditingController();
   TextEditingController otherController = TextEditingController();
@@ -29,13 +33,16 @@ class _FormTaskState extends State<FormTask> {
 
   bool nameValidation = false;
   bool numberValidation = false;
+  bool passwordValidation = false;
   bool otherValidation = false;
   bool autoValidate = false;
+  bool isPassword = true;
 
   DateTime? _dateTime;
   FormData? formData;
 
   String? dropdownValue;
+  String dropdownValue1 = "Ahmadabad";
   String groupValue = "";
 
   RegExp nameRex = RegExp('[a-zA-Z]');
@@ -45,6 +52,7 @@ class _FormTaskState extends State<FormTask> {
   // RegExp nameRex = RegExp("^[a-zA-Z]+\$"); // only allow char and space not allow multiple word
   // RegExp nameRex = RegExp("^[a-zA-Z]+[a-zA-Z\\s]*?\$");
   RegExp numberRex = RegExp("^(?:[+0]9)?[0-9]{10}\$");
+  // RegExp passwordRex = RegExp("r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}\$");
   String hobbiesConcatetaion = "";
 
   final List<String> cityName = [
@@ -77,10 +85,18 @@ class _FormTaskState extends State<FormTask> {
   ];
   List<bool> isSelect = [true, false];
   List checkBoxValue = [];
+  String? labelText;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   GlobalKey<FormFieldState> productListDdlKey = GlobalKey<FormFieldState>();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    forGetData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,16 +113,20 @@ class _FormTaskState extends State<FormTask> {
                     dateController.clear();
                     cityController.clear();
                     otherController.clear();
+                    addressController.clear();
+                    passwordController.clear();
                     isSwimming = false;
                     isWatching = false;
                     isGaming = false;
                     isOther = false;
                     nameValidation = false;
                     numberValidation = false;
+                    labelText = null;
                     groupValue = "";
                     checkBoxValue.clear();
                     isSelect = [true, false];
                     productListDdlKey.currentState!.reset();
+                    FormTask.prefs!.clear();
                   });
                 },
                 child:
@@ -127,7 +147,6 @@ class _FormTaskState extends State<FormTask> {
             child: Column(
               children: [
                 h15(),
-
                 TextFormField(
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),
@@ -157,7 +176,6 @@ class _FormTaskState extends State<FormTask> {
                   ),
                 ),
                 h15(),
-
                 TextFormField(
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp('[0-9]')),
@@ -178,10 +196,9 @@ class _FormTaskState extends State<FormTask> {
                     return null;
                   },
                   keyboardType: TextInputType.phone,
-
                   maxLength: 10,
                   decoration: const InputDecoration(
-counterText: "",
+                    counterText: "",
                     labelText: "Enter Your Mobile Number",
                     prefixIcon: Icon(Icons.phone_android_outlined),
                     border: OutlineInputBorder(
@@ -190,14 +207,107 @@ counterText: "",
                   ),
                 ),
                 h15(),
-
                 TextFormField(
+                  obscureText: isPassword,
+                  controller: passwordController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Enter the your Password";
+                    }
+                    // else {
+                    //   if (passwordRex.hasMatch(value)) {
+                    //     setState(() {
+                    //       passwordValidation = true;
+                    //     });
+                    //   } else {
+                    //     return "Enter a Valid Password";
+                    //   }
+                    // }
+                    return null;
+                  },
+                  keyboardType: TextInputType.visiblePassword,
+                  decoration: InputDecoration(
+                    labelText: "Enter Your Password",
+                    prefixIcon: const Icon(Icons.password),
+                    suffixIcon: IconButton(
+                      icon: isPassword
+                          ? const Icon(
+                              Icons.visibility,
+                              color: Colors.black,
+                            )
+                          : const Icon(
+                              Icons.visibility_off,
+                              color: Colors.black,
+                            ),
+                      onPressed: () {
+                        setState(() {
+                          isPassword = !isPassword;
+                        });
+                      },
+                    ),
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    hintText: "Enter Your password",
+                  ),
+                ),
+                h15(),
+                TextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp("[A-Za-z0-9]")),
+                  ],
+                  controller: addressController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Enter the your Address";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.streetAddress,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: "Enter Your Address",
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
+                      child: Icon(
+                        Icons.home,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    hintText: "Enter Your Address",
+                  ),
+                ),
+                h15(),
+                TextFormField(
+                  // autofocus: true,
+                  readOnly: true,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp('[0-9]')),
                   ],
+
                   controller: dateController,
+                  // onChanged: (v){
+                  //   setState(() {
+                  //     if(v.isNotEmpty){
+                  //       labelText = "Enter your BirthDate";
+                  //     }
+                  //     if(v.isEmpty){
+                  //       labelText = null;
+                  //     }
+                  //   });
+                  //
+                  // },
                   onTap: () async {
                     await openDatePicker(context);
+                    setState(() {
+                      if (dateController.text.isNotEmpty) {
+                        labelText = "Enter your BirthDate";
+                      }
+                      if (dateController.text.isEmpty) {
+                        labelText = null;
+                      }
+                    });
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -205,17 +315,22 @@ counterText: "",
                     }
                     return null;
                   },
+                  textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.text,
-                  decoration: const InputDecoration(
-                    labelText: "Enter Your BirthDate",
-                    prefixIcon: Icon(Icons.calendar_month),
-                    border: OutlineInputBorder(
+
+                  decoration: InputDecoration(
+                    labelText: labelText,
+                    alignLabelWithHint: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+                    prefixIcon: const Icon(Icons.calendar_month),
+                    border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     hintText: "Enter Your BirthDate",
                   ),
                 ),
                 h15(),
                 DropdownButtonFormField(
+                  // value: dropdownValue1,
                   key: productListDdlKey,
                   menuMaxHeight: 300,
                   items: cityName
@@ -279,6 +394,7 @@ counterText: "",
                             onChanged: (value) {
                               setState(() {
                                 isOther = !isOther;
+                                otherController.clear();
                                 checkBoxValue.clear();
                               });
                             },
@@ -324,17 +440,24 @@ counterText: "",
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text("Select Gender:"),
-
-                    CustomRedioBox(groupValue: groupValue,radioName: "Male",onChanged: (value) {
-                      setState(() {
-                        groupValue = value!.toString();
-                      });
-                    },),
-                    CustomRedioBox(groupValue: groupValue,radioName: "Female",onChanged: (value) {
-                      setState(() {
-                        groupValue = value!.toString();
-                      });
-                    },),
+                    CustomRedioBox(
+                      groupValue: groupValue,
+                      radioName: "Male",
+                      onChanged: (value) {
+                        setState(() {
+                          groupValue = value!.toString();
+                        });
+                      },
+                    ),
+                    CustomRedioBox(
+                      groupValue: groupValue,
+                      radioName: "Female",
+                      onChanged: (value) {
+                        setState(() {
+                          groupValue = value!.toString();
+                        });
+                      },
+                    ),
                   ],
                 ),
                 h15(),
@@ -383,11 +506,11 @@ counterText: "",
                           (isOther
                               ? (otherController.text.isNotEmpty &&
                                   otherValidation)
-                              : (isSwimming || isGaming || isWatching)
-
-                          ) &&
+                              : (isSwimming || isGaming || isWatching)) &&
                           nameValidation &&
-                          numberValidation) {
+                          // && passwordValidation
+                          numberValidation &&
+                          addressController.text.isNotEmpty) {
                         _showDialog(context);
                         setState(() {
                           if (isGaming && !(checkBoxValue.contains("Gaming"))) {
@@ -413,6 +536,8 @@ counterText: "",
                           "Name": nameController.text.toString(),
                           "PhoneNumber": numberController.text.toString(),
                           "BirthDate": dateController.text.toString(),
+                          "Password": passwordController.text.toString(),
+                          "Address": addressController.text.toString(),
                           "City": dropdownValue,
                           "hobbies": hobbiesConcatetaion,
                           "Gender": groupValue,
@@ -425,6 +550,29 @@ counterText: "",
                           setState(() {
                             nameValidation = false;
                             numberValidation = false;
+
+                            FormTask.prefs!.setBool("SwimmingPref", isSwimming);
+                            FormTask.prefs!.setBool("WatchingPref", isWatching);
+                            FormTask.prefs!.setBool("GamingPref", isGaming);
+                            FormTask.prefs!.setBool("OtherPref", isOther);
+
+                            FormTask.prefs!.setStringList(
+                                "WorkPref",
+                                isSelect
+                                    .map<String>((e) => e.toString())
+                                    .toList());
+
+                            List<String> list = [
+                              nameController.text.toString(),
+                              numberController.text.toString(),
+                              passwordController.text.toString(),
+                              addressController.text.toString(),
+                              dateController.text.toString(),
+                              dropdownValue.toString(),
+                              otherController.text.toString(),
+                              groupValue
+                            ];
+                            FormTask.prefs!.setStringList("AllPref", list);
                           });
 
                           return Navigator.push(context, MaterialPageRoute(
@@ -434,20 +582,24 @@ counterText: "",
                           ));
                         });
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            showCloseIcon: true,
-                            duration: Duration(milliseconds: 100),
-                            behavior: SnackBarBehavior.floating,
-                            content: Text("Please Fill the Form"),
-                          ),
-                        );
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   const SnackBar(
+                        //     showCloseIcon: true,
+                        //     duration: Duration(milliseconds: 100),
+                        //     behavior: SnackBarBehavior.floating,
+                        //     content: Text("Please Fill the Form"),
+                        //   ),
+                        // );
+                        scaffoldMessengers(context, "Please Fill the Form");
                       }
                     },
                     child: const Text(
                       "Submit",
                       style: TextStyle(color: Colors.white),
                     )),
+                h15(),
+                h15(),
+                h15(),
                 h15(),
               ],
             ),
@@ -482,21 +634,21 @@ counterText: "",
     });
   }
 
-  openDropDownMenu(context) {
-    return DropdownButton(
-      value: dropdownValue,
-      items: cityName
-          .map<DropdownMenuItem<String>>(
-              (e) => DropdownMenuItem(value: e, child: Text(e)))
-          .toList(),
-      onChanged: (value) {
-        setState(() {
-          dropdownValue = value!;
-          cityController.text = dropdownValue.toString();
-        });
-      },
-    );
-  }
+  // openDropDownMenu(context) {
+  //   return DropdownButton(
+  //     value: dropdownValue,
+  //     items: cityName
+  //         .map<DropdownMenuItem<String>>(
+  //             (e) => DropdownMenuItem(value: e, child: Text(e)))
+  //         .toList(),
+  //     onChanged: (value) {
+  //       setState(() {
+  //         dropdownValue = value!;
+  //         cityController.text = dropdownValue.toString();
+  //       });
+  //     },
+  //   );
+  // }
 
   _showDialog(context) {
     return showDialog(
@@ -528,6 +680,51 @@ counterText: "",
         );
       },
     );
+  }
+
+  void scaffoldMessengers(context, message) {
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          showCloseIcon: true,
+          duration: const Duration(milliseconds: 100),
+          behavior: SnackBarBehavior.floating,
+          content: Text(message.toString()),
+        ),
+      );
+  }
+
+  void forGetData() async {
+    FormTask.prefs = await SharedPreferences.getInstance();
+
+    isSwimming = FormTask.prefs!.getBool(
+          "SwimmingPref",
+        ) ??
+        false;
+    isWatching = FormTask.prefs!.getBool("WatchingPref") ?? false;
+    isGaming = FormTask.prefs!.getBool("GamingPref") ?? false;
+    isOther = FormTask.prefs!.getBool("OtherPref") ?? false;
+
+    var isselect1 =
+        FormTask.prefs!.getStringList("WorkPref") ?? ["true", "false"];
+    bool home = bool.parse(isselect1[0]);
+    bool office = bool.parse(isselect1[1]);
+
+    isSelect = [home, office];
+
+    List<String> allValues = FormTask.prefs!.getStringList(
+          "AllPref",
+        ) ??
+        [];
+    nameController.text = allValues[0];
+    numberController.text = allValues[1];
+    passwordController.text = allValues[2];
+    addressController.text = allValues[3];
+    dateController.text = allValues[4];
+    dropdownValue = allValues[5];
+    otherController.text = allValues[6];
+    groupValue = allValues[7];
   }
 }
 

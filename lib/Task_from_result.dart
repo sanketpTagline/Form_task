@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/Task_Form.dart';
 import 'package:untitled/formModel.dart';
 
 class TaskResult extends StatefulWidget {
@@ -90,6 +91,38 @@ class _TaskResultState extends State<TaskResult> {
                     RichText(
                       text: TextSpan(
                         children: [
+                          const TextSpan(
+                              text: "Password : ",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              )),
+                          TextSpan(
+                              // text: "${widget.map["BirthDate"]}",
+                              text: widget.fromdata!.password,
+                              style: textstyle()),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                              text: "Address : ",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              )),
+                          TextSpan(
+                              // text: "${widget.map["BirthDate"]}",
+                              text: widget.fromdata!.address,
+                              style: textstyle()),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        children: [
                           TextSpan(text: "Gender : ", style: textstyle()),
                           TextSpan(
                               // text: "${widget.map["Gender"]}",
@@ -141,7 +174,12 @@ class _TaskResultState extends State<TaskResult> {
                     borderRadius: BorderRadius.circular(8)),
                 backgroundColor: Colors.red,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  // FormTask.prefs!.clear();
+                  return const FormTask();
+                },));
+              },
               child: const Text(
                 "Logout",
                 style: TextStyle(color: Colors.white),
