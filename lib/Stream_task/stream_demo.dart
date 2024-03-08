@@ -10,9 +10,6 @@ class StreamDemo extends StatefulWidget {
 }
 
 class _StreamDemoState extends State<StreamDemo> {
-
-
-
   StreamController controller = StreamController();
   // StreamController controller = StreamController.broadcast();
   late StreamSubscription streamSubscription;
@@ -32,50 +29,46 @@ class _StreamDemoState extends State<StreamDemo> {
     controller.stream.listen((event) {
       print(event);
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(),
       floatingActionButton:
-          FloatingActionButton(onPressed: () {
-
-
-          }, child: const Icon(Icons.add)),
+          FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add)),
       body: Column(
         children: [
           StreamBuilder<dynamic>(
-
               stream: getRandomNumber(),
               builder: (context, snapshot) {
-
-                if(snapshot.hasData)
-                  {
-                    return Container(
-                      height: 650,
-                      width: 400,
-                      color: Colors.grey,
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.all(20),
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        shrinkWrap: true,
-                        itemCount: 1,
-                          itemBuilder: (context, index) {
+                if (snapshot.hasData) {
+                  return Container(
+                    height: 650,
+                    width: 400,
+                    color: Colors.grey,
+                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(20),
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      shrinkWrap: true,
+                      itemCount: 1,
+                      itemBuilder: (context, index) {
                         return ListTile(
-
-                          title:  Text(_strings[_currentIndex].substring(0, snapshot.data),style: const TextStyle(fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.bold)),
+                          title: Text(
+                              _strings[_currentIndex]
+                                  .substring(0, snapshot.data),
+                              style: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.bold)),
                         );
-                      },),
-                    );
-                  }
-                else
-                  {
-                    return const SizedBox();
-                  }
+                      },
+                    ),
+                  );
+                } else {
+                  return const SizedBox();
+                }
               }),
         ],
       ),
@@ -83,55 +76,16 @@ class _StreamDemoState extends State<StreamDemo> {
   }
 
   Stream getRandomNumber() async* {
-    
-
     _currentIndex = 0;
     _currentCharIndex = 0;
     while (_currentCharIndex < _strings[_currentIndex].length) {
-
       await Future.delayed(const Duration(milliseconds: 10));
-      controller.sink.add(_strings[_currentIndex].substring(0, _currentCharIndex));
+      controller.sink
+          .add(_strings[_currentIndex].substring(0, _currentCharIndex));
       yield _currentCharIndex++;
-
     }
-
   }
 }
-
-// void main() async{
-//
-//   final val = getName().asyncExpand((name) => getCharacter(name));
-//
-//   await for(final re in val){
-//     print(re);
-//   }
-//   //streamData();
-//
-// }
-//
-// Stream<String> getCharacter(String name) async*{
-//
-//   final result = name.split('');
-//
-//      for(final val in result){
-//        await Future.delayed(Duration(seconds: 1));
-//       yield val;
-//     }
-// }
-//
-// Stream<String> getName() async*{
-//
-//   yield "gdfmsghmh";
-// }
-//
-//
-// Stream<String> getRandomValues() async* {
-//   for(int i=0;i<text.length;i++){
-//        Future.delayed(Duration(seconds: 1));
-//       yield text[i];
-//         }
-//
-// }
 
 
 /*

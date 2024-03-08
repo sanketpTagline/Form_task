@@ -23,7 +23,6 @@ class _FormTaskState extends State<FormTask> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController dateController = TextEditingController();
-  TextEditingController cityController = TextEditingController();
   TextEditingController otherController = TextEditingController();
 
   bool isSwimming = false;
@@ -35,7 +34,7 @@ class _FormTaskState extends State<FormTask> {
   bool numberValidation = false;
   bool passwordValidation = false;
   bool otherValidation = false;
-  bool autoValidate = false;
+  // bool autoValidate = false;
   bool isPassword = true;
 
   DateTime? _dateTime;
@@ -52,6 +51,7 @@ class _FormTaskState extends State<FormTask> {
   RegExp nameRex = RegExp('[a-zA-Z]');
   RegExp numberRex = RegExp("^(?:[+0]9)?[0-9]{10}\$");
   String hobbiesConcatetaion = "";
+  String _errorMessage = '';
 
   final List<String> cityName = [
     "Ahmadabad",
@@ -111,7 +111,6 @@ class _FormTaskState extends State<FormTask> {
                     nameController.clear();
                     numberController.clear();
                     dateController.clear();
-                    cityController.clear();
                     otherController.clear();
                     addressController.clear();
                     passwordController.clear();
@@ -215,15 +214,18 @@ class _FormTaskState extends State<FormTask> {
                     if (value!.isEmpty) {
                       return "Enter the your Password";
                     }
-                    // else {
-                    //   if (passwordRex.hasMatch(value)) {
-                    //     setState(() {
-                    //       passwordValidation = true;
-                    //     });
-                    //   } else {
-                    //     return "Enter a Valid Password";
-                    //   }
-                    // }
+                    else {
+                      setState(() {
+                        passwordValidation = _validatePassword(passwordController.text.toString());
+                      });
+                      // if (passwordRex.hasMatch(value)) {
+                      //   setState(() {
+                      //     passwordValidation = true;
+                      //   });
+                      // } else {
+                      //   return "Enter a Valid Password";
+                      // }
+                    }
                     return null;
                   },
                   keyboardType: TextInputType.visiblePassword,
@@ -253,8 +255,9 @@ class _FormTaskState extends State<FormTask> {
                 ),
                 h15(),
                 TextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp("[A-Za-z0-9]")),
+                  inputFormatters: const [
+                    // FilteringTextInputFormatter.allow(RegExp("[A-Za-z0-9]")),
+                    // FilteringTextInputFormatter.allow(RegExp("^\d+\s[A-z]+\s[A-z]+',")),
                   ],
                   controller: addressController,
                   validator: (value) {
@@ -504,6 +507,7 @@ class _FormTaskState extends State<FormTask> {
                           groupValue.isNotEmpty &&
                           groupValue != "" &&
                           dropdownValue.isNotEmpty &&
+                          passwordValidation &&
                           (isOther
                               ? (otherController.text.isNotEmpty &&
                                   otherValidation)
@@ -716,6 +720,40 @@ class _FormTaskState extends State<FormTask> {
     setState(() {
     });
   }
+
+  bool _validatePassword(String password) {
+    // Reset error message
+    _errorMessage = '';
+
+    // Password length greater than 6
+    if (password.length <6) {
+      _errorMessage += 'Password must be longer than 6 characters.\n';
+    }
+
+    // Contains at least one uppercase letter
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      _errorMessage += '• Uppercase letter is missing.\n';
+    }
+
+    // Contains at least one lowercase letter
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      _errorMessage += '• Lowercase letter is missing.\n';
+    }
+
+    // Contains at least one digit
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      _errorMessage += '• Digit is missing.\n';
+    }
+
+    // Contains at least one special character
+    if (!password.contains(RegExp(r'[!@#%^&*(),.?":{}|<>]'))) {
+      _errorMessage += '• Special character is missing.\n';
+    }
+
+    // If there are no error messages, the password is valid
+    return _errorMessage.isEmpty;
+  }
+
 }
 
 h15() {

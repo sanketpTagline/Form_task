@@ -3,33 +3,17 @@ import 'package:untitled/Task_Form.dart';
 import 'package:untitled/formModel.dart';
 
 class TaskResult extends StatefulWidget {
-  // Map map;
-  FormData? fromdata;
-
-
-
-  TaskResult(this.fromdata, {super.key});
+  FormData? fromData;
+  TaskResult(this.fromData, {super.key});
 
   @override
   State<TaskResult> createState() => _TaskResultState();
 }
 
 class _TaskResultState extends State<TaskResult> {
-
-  // var list = [];
-  // String hobbies = "er";
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   // list = widget.map["hobbies"];
-  //   // hobbies = list.join(",");
-  //   // print(hobbies);
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // print(widget.map);
+
     return Scaffold(
       appBar: AppBar(),
       body: Column(
@@ -41,8 +25,8 @@ class _TaskResultState extends State<TaskResult> {
             "Welcome",
             style: TextStyle(fontSize: 20),
           )),
-          Text(widget.fromdata!.name,
-            // "${widget.map["Name"]}",
+          Text(widget.fromData!.name,
+
             style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
           ),
           RichText(
@@ -52,8 +36,8 @@ class _TaskResultState extends State<TaskResult> {
                   child: Icon(Icons.location_pin, size: 20),
                 ),
                 TextSpan(
-                    text: widget.fromdata!.city,
-                    // text: "${widget.map["City"]}",
+                    text: widget.fromData!.city,
+
                     style: const TextStyle(color: Colors.black, fontSize: 20)),
               ],
             ),
@@ -66,7 +50,7 @@ class _TaskResultState extends State<TaskResult> {
               height: 250,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey[300]
               ),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -82,8 +66,8 @@ class _TaskResultState extends State<TaskResult> {
                                 fontSize: 20,
                               )),
                           TextSpan(
-                              // text: "${widget.map["BirthDate"]}",
-                              text: widget.fromdata!.birthDate,
+
+                              text: widget.fromData!.birthDate,
                               style: textstyle()),
                         ],
                       ),
@@ -98,8 +82,8 @@ class _TaskResultState extends State<TaskResult> {
                                 fontSize: 20,
                               )),
                           TextSpan(
-                              // text: "${widget.map["BirthDate"]}",
-                              text: widget.fromdata!.password,
+
+                              text: widget.fromData!.password,
                               style: textstyle()),
                         ],
                       ),
@@ -114,8 +98,8 @@ class _TaskResultState extends State<TaskResult> {
                                 fontSize: 20,
                               )),
                           TextSpan(
-                              // text: "${widget.map["BirthDate"]}",
-                              text: widget.fromdata!.address,
+
+                              text: widget.fromData!.address,
                               style: textstyle()),
                         ],
                       ),
@@ -125,8 +109,8 @@ class _TaskResultState extends State<TaskResult> {
                         children: [
                           TextSpan(text: "Gender : ", style: textstyle()),
                           TextSpan(
-                              // text: "${widget.map["Gender"]}",
-                              text: widget.fromdata!.gender,
+
+                              text: widget.fromData!.gender,
                               style: textstyle()),
                         ],
                       ),
@@ -136,8 +120,8 @@ class _TaskResultState extends State<TaskResult> {
                         children: [
                           TextSpan(text: "Contact : ", style: textstyle()),
                           TextSpan(
-                              // text: "${widget.map["PhoneNumber"]}",
-                              text: widget.fromdata!.phoneNumber,
+
+                              text: widget.fromData!.phoneNumber,
                               style: textstyle()),
                         ],
                       ),
@@ -147,7 +131,7 @@ class _TaskResultState extends State<TaskResult> {
                         children: [
                           TextSpan(text: "Work From : ", style: textstyle()),
                           TextSpan(
-                              text: widget.fromdata!.work[0] == true
+                              text: widget.fromData!.work[0] == true
                                   ? "Home"
                                   : "Office",
                               style: textstyle()),
@@ -158,8 +142,8 @@ class _TaskResultState extends State<TaskResult> {
                       text: TextSpan(
                         children: [
                           TextSpan(text: "Hobbies : ", style: textstyle()),
-                          TextSpan(text: widget.fromdata!.hobbies, style: textstyle()),
-                          // TextSpan(text: "${widget.map["hobbies"]}", style: textstyle()),
+                          TextSpan(text: widget.fromData!.hobbies, style: textstyle()),
+
                         ],
                       ),
                     ),
@@ -176,7 +160,7 @@ class _TaskResultState extends State<TaskResult> {
               ),
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  // FormTask.prefs!.clear();
+                  FormTask.prefs!.clear();
                   return const FormTask();
                 },));
               },
